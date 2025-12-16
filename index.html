@@ -10,7 +10,33 @@
 </head>
 
 <body>
-    <div class="app-container">
+    <!-- Pantalla de Autenticación -->
+    <div id="auth-container" class="auth-container">
+        <div class="auth-box">
+            <h1>Bienvenido</h1>
+            <p>Inicia sesión para gestionar tu tienda</p>
+            <form id="login-form">
+                <input type="text" id="auth-username" placeholder="Usuario" required>
+                <input type="password" id="auth-password" placeholder="Contraseña" required>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+            <p class="auth-switch">¿No tienes cuenta? <a href="#" id="link-to-register">Regístrate</a></p>
+        </div>
+
+        <div class="auth-box hidden" id="register-box">
+            <h1>Registro</h1>
+            <p>Crea tu cuenta personalizada</p>
+            <form id="register-form">
+                <input type="text" id="reg-username" placeholder="Nuevo Usuario" required>
+                <input type="password" id="reg-password" placeholder="Contraseña" required>
+                <button type="submit" class="btn-secondary">Registrarse</button>
+            </form>
+            <p class="auth-switch">¿Ya tienes cuenta? <a href="#" id="link-to-login">Entrar</a></p>
+        </div>
+    </div>
+
+    <!-- Aplicación Principal (Oculta por defecto) -->
+    <div id="app-container" class="container hidden">
         <header>
             <div class="stats-panel">
                 <div class="stat-item">
@@ -23,6 +49,10 @@
                 </div>
             </div>
             <h1>Inventario</h1>
+            <div class="user-panel">
+                <span>Hola, <b id="display-username">Usuario</b></span>
+                <button id="btn-logout" class="btn-small">Salir</button>
+            </div>
         </header>
 
         <main>
@@ -50,8 +80,9 @@
                     <span class="icon">🗑️</span> Eliminar
                 </button>
             </div>
-        </main>
     </div>
+    </div>
+    <!-- /Aplicación Principal -->
 
     <!-- Modal Overlay -->
     <div id="modal-overlay" class="modal-overlay hidden">
