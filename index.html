@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Productos Premium</title>
+    <title>Gestor de Productos SaaS</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -38,20 +38,40 @@
     <!-- Aplicación Principal (Oculta por defecto) -->
     <div id="app-container" class="container hidden">
         <header>
-            <div class="stats-panel">
-                <div class="stat-item">
-                    <span class="stat-label">Dinero</span>
-                    <span id="total-money" class="stat-value">0.00€</span>
+            <div class="header-top">
+                <div class="stats-panel">
+                    <div class="stat-item">
+                        <span class="stat-label">Dinero:</span>
+                        <span id="total-money" class="stat-value money">0.00€</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Productos:</span>
+                        <span id="total-products" class="stat-value">0</span>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">Productos</span>
-                    <span id="total-products" class="stat-value">0</span>
+                <div class="user-panel">
+                    <div class="user-info">
+                        <span>Hola, <b id="display-username">Usuario</b></span>
+                        <span id="display-role" class="role-badge">Admin</span>
+                    </div>
+                    <button id="btn-logout" class="btn-small">Salir</button>
                 </div>
             </div>
+
             <h1>Inventario</h1>
-            <div class="user-panel">
-                <span>Hola, <b id="display-username">Usuario</b></span>
-                <button id="btn-logout" class="btn-small">Salir</button>
+
+            <!-- Panel de Equipo (Solo Admin) -->
+            <div id="team-panel" class="team-panel hidden">
+                <h3>👥 Gestión de Equipo</h3>
+                <div class="team-form">
+                    <input type="text" id="team-username" placeholder="Usuario a invitar">
+                    <select id="team-role">
+                        <option value="vendedor">Vendedor</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                    <button id="btn-team-add" class="btn-secondary">Añadir</button>
+                </div>
+                <small>El usuario será fusionado a tu tienda. Perderá sus datos propios.</small>
             </div>
         </header>
 
@@ -80,9 +100,8 @@
                     <span class="icon">🗑️</span> Eliminar
                 </button>
             </div>
+        </main>
     </div>
-    </div>
-    <!-- /Aplicación Principal -->
 
     <!-- Modal Overlay -->
     <div id="modal-overlay" class="modal-overlay hidden">
@@ -124,7 +143,6 @@
                     </div>
                 </form>
             </div>
-            <!-- Footer removed from here -->
         </div>
     </div>
 
