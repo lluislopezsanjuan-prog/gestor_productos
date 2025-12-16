@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Productos Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Dinero</span>
+                    <span id="total-money" class="stat-value">0.00€</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Productos</span>
+                    <span id="total-products" class="stat-value">0</span>
+                </div>
+            </div>
+            <h1>Inventario</h1>
+        </header>
+
+        <main>
+            <div id="status-message" class="status-message hidden"></div>
+
+            <div id="empty-state" class="empty-state">
+                <p>No hay productos añadidos aún.</p>
+            </div>
+
+            <div id="product-list" class="product-list">
+                <!-- Los productos se añadirán aquí dinámicamente -->
+            </div>
+
+            <div class="action-area">
+                <button id="btn-add" class="btn-primary">
+                    <span class="icon">+</span> Añadir Producto
+                </button>
+                <button id="btn-sell" class="btn-sell hidden" disabled>
+                    <span class="icon">$</span> Vender
+                </button>
+                <button id="btn-stock" class="btn-secondary hidden" disabled>
+                    <span class="icon">📦</span> Stock +
+                </button>
+                <button id="btn-delete" class="btn-danger hidden" disabled>
+                    <span class="icon">🗑️</span> Eliminar
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Nuevo Producto</h2>
+                <button id="btn-close" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <div class="form-group">
+                        <label for="product-name">Nombre del Producto</label>
+                        <input type="text" id="product-name" placeholder="Ej. Zapatillas Deportivas" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="product-quantity">Cantidad</label>
+                            <input type="number" id="product-quantity" placeholder="0" min="1" required>
+                        </div>
+                        <div class="form-group half">
+                            <label for="product-price">Precio (€)</label>
+                            <input type="number" id="product-price" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-code">Código (8 dígitos)</label>
+                        <div class="input-with-action">
+                            <input type="number" id="product-code" placeholder="12345678" required>
+                            <button type="button" id="btn-random" class="btn-secondary"
+                                title="Generar al azar">🎲</button>
+                        </div>
+                        <small>Asigna un número de 8 dígitos.</small>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" id="btn-save" class="btn-primary full-width">Guardar Producto</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Footer removed from here -->
+        </div>
+    </div>
+
+    <!-- Stock Modal -->
+    <div id="stock-modal-overlay" class="modal-overlay hidden">
+        <div class="modal compact">
+            <div class="modal-header">
+                <h2>Añadir Stock</h2>
+                <button id="btn-close-stock" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="stock-form">
+                    <div class="form-group">
+                        <label id="stock-label" for="stock-quantity">Cantidad a añadir</label>
+                        <input type="number" id="stock-quantity-input" placeholder="0" min="1" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" id="btn-save-stock" class="btn-primary full-width">Actualizar
+                            Stock</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
