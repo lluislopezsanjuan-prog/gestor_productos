@@ -34,22 +34,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalMoney = 0;
     let selectedProductCode = null;
 
-    // Persistencia (Base de Datos)
-    function saveData() {
-        const data = {
-            products: products,
-            money: totalMoney
-        };
-        localStorage.setItem('gestor_productos_db', JSON.stringify(data));
-    }
+    // API Functions
+    const API_URL = '/api'; // Relative URL for same-origin (deployment)
 
-    function loadData() {
-        const saved = localStorage.getItem('gestor_productos_db');
-        if (saved) {
-            const data = JSON.parse(saved);
-            products = data.products || [];
-            totalMoney = data.money || 0;
+    async function loadData() {
+        try {
+            const res = await fetch(`${API_URL}/data`);
+            if (!res.ok) throw new Error('Error loading data');
+            const data = await res.json();
+            products = data.products.map(p => ({
+                ...p,
+                price: parseFloat(p.price) // Ensure price is float
+            }));
+            totalMoney = parseFloat(data.money);
             renderProducts();
+        } catch (err) {
+            console.error(err);
+            showStatus('Error de conexión con el servidor 🔴');
         }
     }
 
@@ -163,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function saveProduct(e) {
+    async function saveProduct(e) {
         e.preventDefault();
 
         const name = inputName.value.trim();
@@ -181,66 +182,105 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const newProduct = { name, quantity, price, code };
-        products.push(newProduct);
+        try {
+            const res = await fetch(`${API_URL}/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, quantity, price, code })
+            });
 
-        saveData(); // Guardar cambios
-        renderProducts();
-        closeModal();
+            if (res.ok) {
+                await loadData(); // Reload everything to sync
+                closeModal();
+                showStatus('Producto guardado 🟢');
+            } else {
+                alert('Error al guardar. Puede que el código ya exista.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión');
+        }
     }
 
-    function saveStock(e) {
+    async function saveStock(e) {
         e.preventDefault();
         if (!selectedProductCode) return;
-
-        const product = products.find(p => p.code === selectedProductCode);
-        if (!product) return;
 
         const addedQuantity = parseInt(inputStockQuantity.value);
 
         if (!isNaN(addedQuantity) && addedQuantity > 0) {
-            product.quantity += addedQuantity;
-            showStatus(`¡Stock actualizado! +${addedQuantity} unidades`);
-            saveData(); // Guardar cambios
-            renderProducts();
-            closeStockModal();
+            try {
+                const res = await fetch(`${API_URL}/stock`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: selectedProductCode, quantity: addedQuantity })
+                });
+
+                if (res.ok) {
+                    showStatus(`¡Stock actualizado! +${addedQuantity} unidades`);
+                    await loadData();
+                    closeStockModal();
+                }
+            } catch (err) {
+                console.error(err);
+            }
         } else {
             alert('Por favor introduce una cantidad válida.');
         }
     }
 
-    function sellProduct() {
+    async function sellProduct() {
         if (!selectedProductCode) return;
 
         const productIndex = products.findIndex(p => p.code === selectedProductCode);
         if (productIndex === -1) return;
-
         const product = products[productIndex];
 
         if (product.quantity > 0) {
-            product.quantity--;
-            totalMoney += product.price;
-            showStatus(`¡${product.name} vendido! +${product.price.toFixed(2)}€`);
-            saveData(); // Guardar cambios
-            renderProducts();
+            try {
+                // Optimistic UI update (optional, but let's stick to sync for safety on invalid stock)
+                const res = await fetch(`${API_URL}/sell`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: selectedProductCode, price: product.price })
+                });
+
+                if (res.ok) {
+                    showStatus(`¡${product.name} vendido! +${product.price.toFixed(2)}€`);
+                    await loadData();
+                } else {
+                    alert('Error en la venta');
+                }
+            } catch (err) {
+                console.error(err);
+            }
         } else {
             alert('¡No hay stock de este producto!');
         }
     }
 
-    function deleteProduct() {
+    async function deleteProduct() {
         if (!selectedProductCode) return;
-
         const product = products.find(p => p.code === selectedProductCode);
         if (!product) return;
 
         if (confirm(`¿Estás seguro de eliminar el producto "${product.name}"?`)) {
-            products = products.filter(p => p.code !== selectedProductCode);
-            selectedProductCode = null; // Clear selection
-            showStatus('Producto eliminado');
-            saveData(); // Guardar cambios
-            renderProducts();
-            updateSellButton();
+            try {
+                const res = await fetch(`${API_URL}/products/${selectedProductCode}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    selectedProductCode = null;
+                    showStatus('Producto eliminado');
+                    await loadData();
+                    updateSellButton();
+                } else {
+                    alert('Error al eliminar');
+                }
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 
